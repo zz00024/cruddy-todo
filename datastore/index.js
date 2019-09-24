@@ -74,7 +74,6 @@ exports.update = (id, text, callback) => {
   //   callback(null, { id, text });
   // }
   fs.readFile(`${exports.dataDir}/${id}.txt`, 'utf8', (err, oldText) => {
-    console.log(oldText);
     if (!oldText) {
       callback(new Error(`No item with id: ${id}`));
     } else {
@@ -87,26 +86,30 @@ exports.update = (id, text, callback) => {
       });
     }
   });
-
-
-  // fs.writeFile(`${exports.dataDir}/${id}.txt`, text, (err) => {
-  //   if (err) {
-  //     callback(new Error(`No item with id: ${id}`));
-  //   } else {
-  //     callback(null, {'id': id, 'text': text});
-  //   }
-  // });
 };
 
 exports.delete = (id, callback) => {
-  var item = items[id];
-  delete items[id];
-  if (!item) {
-    // report an error if item not found
-    callback(new Error(`No item with id: ${id}`));
-  } else {
-    callback();
-  }
+  // var item = items[id];
+  // delete items[id];
+  // if (!item) {
+  //   // report an error if item not found
+  //   callback(new Error(`No item with id: ${id}`));
+  // } else {
+  //   callback();
+  // }
+  fs.readFile(`${exports.dataDir}/${id}.txt`, 'utf8', (err, oldText) => {
+    if (!oldText) {
+      callback(new Error(`No item with id: ${id}`));
+    } else {
+      fs.unlink(`${exports.dataDir}/${id}.txt`, (err) => {
+        if (err) {
+          callback(err);
+        } else {
+          callback(null);
+        }
+      });
+    }
+  });
 };
 
 // Config+Initialization code -- DO NOT MODIFY /////////////////////////////////
