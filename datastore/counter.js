@@ -18,7 +18,7 @@ const zeroPaddedNumber = (num) => {
 const readCounter = (callback) => {
   fs.readFile(exports.counterFile, (err, fileData) => {
     if (err) {
-      callback(null, 0);
+      callback(err);
     } else {
       callback(null, Number(fileData));
     }
@@ -29,7 +29,7 @@ const writeCounter = (count, callback) => {
   var counterString = zeroPaddedNumber(count);
   fs.writeFile(exports.counterFile, counterString, (err) => {
     if (err) {
-      throw ('error writing counter');
+      callback(err);
     } else {
       callback(null, counterString);
     }
@@ -38,9 +38,28 @@ const writeCounter = (count, callback) => {
 
 // Public API - Fix this function //////////////////////////////////////////////
 
-exports.getNextUniqueId = () => {
-  counter = counter + 1;
-  return zeroPaddedNumber(counter);
+exports.getNextUniqueId = (callback) => {
+  //return the current count and assign it to counter
+  //get the correct counter value by invking reaCounter method, then we should have a correct number(count)
+  //then we wanna increment on that count number
+  //Invoke writeCOunter method with the updated count number as a argument.
+  // ps. how to use error first callback method
+  readCounter((err, counter) => {
+    if (err) {
+      callback(err);
+    } else {
+      counter += 1;
+      counter = zeroPaddedNumber(counter);
+      writeCounter(counter, (err) => {
+        if (err) {
+          callback(err);
+        } else {
+          callback(null, counter);
+        }
+      });
+    }
+  });
+
 };
 
 
@@ -48,3 +67,5 @@ exports.getNextUniqueId = () => {
 // Configuration -- DO NOT MODIFY //////////////////////////////////////////////
 
 exports.counterFile = path.join(__dirname, 'counter.txt');
+
+//build a function that to handle read and write counter method at once
