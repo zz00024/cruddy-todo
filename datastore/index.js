@@ -8,19 +8,19 @@ var items = {};
 // Public API - Fix these CRUD functions ///////////////////////////////////////
 
 exports.create = (text, callback) => {
-  counter.getNextUniqueId( (err, newID) => {
+  counter.getNextUniqueId( (err, id) => {
     if (err) {
       callback(err);
     } else {
       // items[id] = text;
       // var filepath = exports.dataDir(newID, text);
-
-      fs.writeFile(newID, text, (err, newFile) => {
+      // "./dirData/" + newID + ".txt"
+      fs.writeFile(`${exports.dataDir}/${id}.txt`, text, (err) => {
         if (err) {
           callback(err);
         } else {
           // exports.dataDir(newID, text)
-          callback(null, { id, text });
+          callback(null, { id, text: id });
         }
       });
     }
