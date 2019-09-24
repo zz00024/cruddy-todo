@@ -20,7 +20,7 @@ exports.create = (text, callback) => {
           callback(err);
         } else {
           // exports.dataDir(newID, text)
-          callback(null, { id, text: id });
+          callback(null, { id, text });
         }
       });
     }
@@ -28,19 +28,41 @@ exports.create = (text, callback) => {
 };
 
 exports.readAll = (callback) => {
-  var data = _.map(items, (text, id) => {
-    return { id, text };
+  // var data = _.map(items, (text, id) => {
+  //   return { id, text };
+  // });
+  // callback(null, data);
+  // fs.reaadFile(_.map(`${exports.dataDir}`, )
+  fs.readdir(`${exports.dataDir}`, (err, fileList) => {
+    if (err) {
+      callback(err);
+    } else {
+      // create variable to contains the output of the map function
+      //pass in fileList as the list. an the function at the second parameter will be the function that conver t the fileList into the corret form on the npm test
+      //the function at the second parameter: 1. slice out the index out of the each name at fileList, create an object whose template is {id: , text: }
+      var fileArray = _.map(fileList, function(element) {
+        var id = element.slice(0, element.length - 4);
+        return {'id': id, 'text': id};
+      });
+      callback(null, fileArray);
+    }
   });
-  callback(null, data);
 };
 
 exports.readOne = (id, callback) => {
-  var text = items[id];
-  if (!text) {
-    callback(new Error(`No item with id: ${id}`));
-  } else {
-    callback(null, { id, text });
-  }
+  // var text = items[id];
+  // if (!text) {
+  //   callback(new Error(`No item with id: ${id}`));
+  // } else {
+  //   callback(null, { id, text });
+  // }
+  fs.readFile(`${exports.dataDir}/${id}.txt`, 'utf8', (err, text) =>{
+    if (err) {
+      callback(new Error(`No item with id: ${id}`));
+    } else {
+      callback(null, {'id': id, 'text': text});
+    }
+  });
 };
 
 exports.update = (id, text, callback) => {
